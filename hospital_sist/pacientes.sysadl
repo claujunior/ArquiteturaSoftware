@@ -1,0 +1,330 @@
+Model hospital_sist_Architecture ; package SysADL.types {
+    import SysADL_units;
+    value type Int { }
+    value type Boolean { }
+    value type String { }
+    value type Void { }
+    value type Real { }
+    value type FrequenciaCardiacaVT extends Real { unit = SysADL_units.bpm }
+    value type PressaoArterialVT extends Real { unit = SysADL_units.mmHg }
+    value type FrequenciaRespiratoriaVT extends Real { unit = SysADL_units.rpm }
+    value type TemperaturaVT extends Real { unit = SysADL_units.celsius }
+    value type SaturacaoOxigenioVT extends Real { unit = SysADL_units.percentual }
+    value type DataHoraVT extends String {  }
+    value type IdentificadorPacienteVT extends String {  }
+    value type IdentificadorLeitoVT extends String {  }
+    value type DisponibilidadeLeitoVT extends Boolean {  }
+    datatype SinaisVitaisVT {
+        attributes:
+            frequenciaCardiaca : FrequenciaCardiacaVT;
+            pressaoSistolica : PressaoArterialVT;
+            pressaoDiastolica : PressaoArterialVT;
+            frequenciaRespiratoria : FrequenciaRespiratoriaVT;
+            temperatura : TemperaturaVT;
+            saturacaoOxigenio : SaturacaoOxigenioVT;
+    }
+    datatype RegistroMedicaoVT {
+        attributes:
+            idPaciente : IdentificadorPacienteVT;
+            dataHora : DataHoraVT;
+            sinaisVitais : SinaisVitaisVT;
+    }
+    datatype DadosLeitoVT {
+        attributes:
+            idLeito : IdentificadorLeitoVT;
+            disponivel : DisponibilidadeLeitoVT;
+            idPaciente : IdentificadorPacienteVT;
+    }
+    datatype DadosPacienteVT {
+        attributes:
+            idPaciente : IdentificadorPacienteVT;
+            nome : String;
+    }
+} Requirement SistPacientesRequisitos ( 0 ) { text = "O sistema deve satisfazer as necessidades representadas por requisitos funcionais e não funcionais." Requirement MonitorarSSVVFR ( 1 ) { text = "O sistema deve ser capaz de inferir os sinais vitais de um paciente de acordo com as necessidades médicas." satisfied by SysADL_components.MonitorSinaisVitaisCP ; Requirement MonitorarFCFR ( 1.1 ) { text = "O sistema deve ser capaz de inferir a frequência cardíaca de um paciente por meio de um sensor." satisfied by SysADL_components.SensorFrequenciaCardiacaCP ; } Requirement MonitorarPAFR ( 1.2 ) { text = "O sistema deve ser capaz de inferir a pressão arterial de um paciente por meio de um sensor." satisfied by SysADL_components.SensorPressaoArterialCP ; } Requirement MonitorarFRFR ( 1.3 ) { text = "O sistema deve ser capaz de inferir a frequência respiratória de um paciente por meio de um sensor." satisfied by SysADL_components.SensorFrequenciaRespiratoriaCP ; } Requirement MonitorarTFR ( 1.4 ) { text = "O sistema deve ser capaz de inferir a temperatura de um paciente por meio de um sensor." satisfied by SysADL_components.SensorTemperaturaCP ; } Requirement MonitorarSpO2FR ( 1.5 ) { text = "O sistema deve ser capaz de inferir a saturação periférica de oxigênio do paciente por meio de um sensor." satisfied by SysADL_components.SensorOximetriaCP ; } } Requirement VisualizarSSVVFR ( 2 ) { text = "O sistema deve fornecer uma interface de acesso aos dados do(s) paciente(s), tal como seus sinais vitais." Requirement VisualizarRemotamenteFR ( 2.2 ) { text = "Deve existir uma interface centralizada de visualização dos dados dos pacientes, acessível por dispositivos de borda." Requirement SistCentralFR ( 2.2.1 ) { text = "Há de existir uma unidade central física para onde os dados do sistema são repassados e então tratados." satisfied by SysADL_components.SistemaCentralCP ; Requirement ArmazenamentoDadosFR ( 2.2.1.1 ) { text = "Um histórico dos dados vitais dos pacientes deve ser armazenado." satisfied by SysADL_components.RepositorioHistoricoCP ; } Requirement VisualizarBordaFR ( 2.2.1.2 ) { text = "Deve existir uma forma dos profissionais (e do próprio paciente) acessarem o sistema central utilizando dispositivos de borda." satisfied by SysADL_components.InterfaceBordaCP ; } Requirement GerenciarLeitosFR ( 2.2.1.3 ) { text = "O sistema central deve administrar o estado atual de cada leito (quanto à sua disponibilidade e quanto ao perfil do paciente internado)." satisfied by SysADL_components.GerenciadorLeitosCP ; } Requirement ConexaoSistPacientesFR ( 2.2.1.4 ) { text = "O sistema deve ter acesso aos dados de gerenciamento de pacientes do hospital." satisfied by SysADL_components.IntegracaoHospitalarCP ; } } } Requirement VisualizarLocalmenteFR ( 2.1 ) { text = "Deve ser fornecida uma interface local e direta de visualização dos dados, sem dependência do sistema central." satisfied by SysADL_components.InterfaceLocalCP ; } } Requirement SegurancaDeDadosNFR ( 3 ) { text = "Os dados dos pacientes devem ser administrados pelo sistema com foco em segurança da informação." Requirement LGPDConformidadeNFR ( 3.1 ) { text = "Criptografia de dados de saúde dos pacientes em repouso e em trânsito" } Requirement ControleDeAcessoNFR ( 3.2 ) { text = "Permissões estritas de acesso aos dados: somente pacientes e profissionais autorizados podem acessar." } } Requirement ConfiabilidadeNFR ( 4 ) { text = "Os dados dos pacientes devem ser armazenados de forma a maximizar a confiança de acesso." Requirement DisponibilidadeNFR ( 4.1 ) { text = "Sistema deve tet tempo de atividade mais próximo possível do ininterrupto (sem downtime)." } Requirement PlanoDeContingenciaNFR ( 4.2 ) { text = "Tempo de recuperação menor que 15 minutos em caso de falha no servidor." } } } Requirement SoarAlarmeFR ( 1.6 ) { text = "O sistema deve ser capaz de soar um alarme se um dos sinais vitais do paciente chegarem a valores críticos." Requirement SoarAlarmeLocalmenteFR ( 1.6.1 ) { text = "O alarme deve ter um meio de funcionamento independente do sistema centralizado." } Requirement SoarAlarmeRemotamenteFR ( 1.6.2 ) { text = "O alarme deve ser enviado para a central, a fim de notificar profissionais que não estejam em proximidade suficiente do leito." } } package SysADL_ports {
+    import SysADL.types;
+    port def MonitorSinaisVitaisFCIn { flow in FrequenciaCardiacaVT }
+    port def MonitorSinaisVitaisFCOut { flow out FrequenciaCardiacaVT }
+    port def SensorFrequenciaRespiratoriaIn { flow in FrequenciaRespiratoriaVT }
+    port def SensorFrequenciaRespiratoriaOut { flow out FrequenciaRespiratoriaVT }
+    port def SensorPressaoArterialSistolicaIn { flow in PressaoArterialVT }
+    port def SensorPressaoArterialSistolicaOut { flow out PressaoArterialVT }
+    port def SensorPressaoArterialDiastolicaIn { flow in PressaoArterialVT }
+    port def SensorPressaoArterialDiastolicaOut { flow out PressaoArterialVT }
+    port def SensorTemperaturaIn { flow in TemperaturaVT }
+    port def SensorTemperaturaOut { flow out TemperaturaVT }
+    port def SensorOximetriaIn { flow in SaturacaoOxigenioVT }
+    port def SensorOximetriaOut { flow out SaturacaoOxigenioVT }
+    port def MonitorSinaisVitaisCentralIn { flow in RegistroMedicaoVT }
+    port def MonitorSinaisVitaisCentralOut { flow out RegistroMedicaoVT }
+    port def RepositorioHistoricoIn { flow in RegistroMedicaoVT }
+    port def RepositorioHistoricoOut { flow out RegistroMedicaoVT }
+    port def VisualizacaoCentralIn { flow in RegistroMedicaoVT }
+    port def VisualizacaoCentralOut { flow out RegistroMedicaoVT }
+    port def GerenciadorLeitosDisponibilidadeIn { flow in DadosLeitoVT }
+    port def GerenciadorLeitosDisponibilidadeOut { flow out DadosLeitoVT }
+    port def GerenciadorLeitosConsultaPacienteIn { flow in IdentificadorPacienteVT }
+    port def GerenciadorLeitosConsultaPacienteOut { flow out IdentificadorPacienteVT }
+    port def IntegracaoHospitalarPacienteIn { flow in DadosPacienteVT }
+    port def IntegracaoHospitalarPacienteOut { flow out DadosPacienteVT }
+} package SysADL_connectors {
+    import SysADL_ports;
+    import SysADL.types;
+    connector def MonitorSinaisVitaisFCCN {
+        participants:
+            ~ origem : MonitorSinaisVitaisFCOut;
+            ~ destino : MonitorSinaisVitaisFCIn;
+        flows:
+            FrequenciaCardiacaVT from origem to destino
+    }
+    connector def SensorFrequenciaRespiratoriaCN {
+        participants:
+            ~ origem : SensorFrequenciaRespiratoriaOut;
+            ~ destino : SensorFrequenciaRespiratoriaIn;
+        flows:
+            FrequenciaRespiratoriaVT from origem to destino
+    }
+    connector def SensorPressaoArterialSistolicaCN {
+        participants:
+            ~ origem : SensorPressaoArterialSistolicaOut;
+            ~ destino : SensorPressaoArterialSistolicaIn;
+        flows:
+            PressaoArterialVT from origem to destino
+    }
+    connector def SensorPressaoArterialDiastolicaCN {
+        participants:
+            ~ origem : SensorPressaoArterialDiastolicaOut;
+            ~ destino : SensorPressaoArterialDiastolicaIn;
+        flows:
+            PressaoArterialVT from origem to destino
+    }
+    connector def SensorTemperaturaCN {
+        participants:
+            ~ origem : SensorTemperaturaOut;
+            ~ destino : SensorTemperaturaIn;
+        flows:
+            TemperaturaVT from origem to destino
+    }
+    connector def SensorOximetriaCN {
+        participants:
+            ~ origem : SensorOximetriaOut;
+            ~ destino : SensorOximetriaIn;
+        flows:
+            SaturacaoOxigenioVT from origem to destino
+    }
+    connector def MonitorSinaisVitaisCentralCN {
+        participants:
+            ~ origem : MonitorSinaisVitaisCentralOut;
+            ~ destino : MonitorSinaisVitaisCentralIn;
+        flows:
+            RegistroMedicaoVT from origem to destino
+    }
+    connector def RepositorioHistoricoCN {
+        participants:
+            ~ origem : RepositorioHistoricoOut;
+            ~ destino : RepositorioHistoricoIn;
+        flows:
+            RegistroMedicaoVT from origem to destino
+    }
+    connector def VisualizacaoCentralCN {
+        participants:
+            ~ origem : VisualizacaoCentralOut;
+            ~ destino : VisualizacaoCentralIn;
+        flows:
+            RegistroMedicaoVT from origem to destino
+    }
+    connector def GerenciadorLeitosDisponibilidadeCN {
+        participants:
+            ~ origem : GerenciadorLeitosDisponibilidadeOut;
+            ~ destino : GerenciadorLeitosDisponibilidadeIn;
+        flows:
+            DadosLeitoVT from origem to destino
+    }
+    connector def GerenciadorLeitosConsultaPacienteCN {
+        participants:
+            ~ origem : GerenciadorLeitosConsultaPacienteOut;
+            ~ destino : GerenciadorLeitosConsultaPacienteIn;
+        flows:
+            IdentificadorPacienteVT from origem to destino
+    }
+    connector def IntegracaoHospitalarPacienteCN {
+        participants:
+            ~ origem : IntegracaoHospitalarPacienteOut;
+            ~ destino : IntegracaoHospitalarPacienteIn;
+        flows:
+            DadosPacienteVT from origem to destino
+    }
+} package SysADL_components {
+    import SysADL_ports;
+    import SysADL_connectors;
+    import SysADL.types;
+    component def MonitorSinaisVitaisCP {
+        ports:
+            monitorRegistroOut : MonitorSinaisVitaisCentralOut;
+        configuration {
+            components:
+                SensorFrequenciaCardiacaCP : SensorFrequenciaCardiacaCP {
+                    using ports:
+                        sensorFCOut : MonitorSinaisVitaisFCOut;
+                }
+                SensorFrequenciaRespiratoriaCP : SensorFrequenciaRespiratoriaCP {
+                    using ports:
+                        sensorFROut : SensorFrequenciaRespiratoriaOut;
+                }
+                SensorOximetriaCP : SensorOximetriaCP {
+                    using ports:
+                        sensorSpO2Out : SensorOximetriaOut;
+                }
+                SensorPressaoArterialCP : SensorPressaoArterialCP {
+                    using ports:
+                        sensorSistolicaOut : SensorPressaoArterialSistolicaOut;
+                        sensorDiastolicaOut : SensorPressaoArterialDiastolicaOut;
+                }
+                SensorTemperaturaCP : SensorTemperaturaCP {
+                    using ports:
+                        sensorTemperaturaOut : SensorTemperaturaOut;
+                }
+                InterfaceLocalCP : InterfaceLocalCP {
+                    using ports:
+                        localFCIn : MonitorSinaisVitaisFCIn;
+                        localSistolicaIn : SensorPressaoArterialSistolicaIn;
+                        localDiastolicaIn : SensorPressaoArterialDiastolicaIn;
+                        localFRIn : SensorFrequenciaRespiratoriaIn;
+                        localTemperaturaIn : SensorTemperaturaIn;
+                        localSpO2In : SensorOximetriaIn;
+                        localRegistroOut : MonitorSinaisVitaisCentralOut;
+                }
+            connectors:
+                frequenciaCardiaca : MonitorSinaisVitaisFCCN bindings sensorFCOut = localFCIn;
+                frequenciaRespiratoria : SensorFrequenciaRespiratoriaCN bindings sensorFROut = localFRIn;
+                pressaoSistolica : SensorPressaoArterialSistolicaCN bindings sensorSistolicaOut = localSistolicaIn;
+                pressaoDiastolica : SensorPressaoArterialDiastolicaCN bindings sensorDiastolicaOut = localDiastolicaIn;
+                temperatura : SensorTemperaturaCN bindings sensorTemperaturaOut = localTemperaturaIn;
+                oximetria : SensorOximetriaCN bindings sensorSpO2Out = localSpO2In;
+            delegations:
+                localRegistroOut to monitorRegistroOut
+        }
+    }
+    component def SensorFrequenciaCardiacaCP {
+        ports:
+            sensorFCOut : MonitorSinaisVitaisFCOut;
+    }
+    component def SensorPressaoArterialCP {
+        ports:
+            sensorSistolicaOut : SensorPressaoArterialSistolicaOut;
+            sensorDiastolicaOut : SensorPressaoArterialDiastolicaOut;
+    }
+    component def SensorFrequenciaRespiratoriaCP {
+        ports:
+            sensorFROut : SensorFrequenciaRespiratoriaOut;
+    }
+    component def SensorTemperaturaCP {
+        ports:
+            sensorTemperaturaOut : SensorTemperaturaOut;
+    }
+    component def SensorOximetriaCP {
+        ports:
+            sensorSpO2Out : SensorOximetriaOut;
+    }
+    component def InterfaceLocalCP {
+        ports:
+            localFCIn : MonitorSinaisVitaisFCIn;
+            localSistolicaIn : SensorPressaoArterialSistolicaIn;
+            localDiastolicaIn : SensorPressaoArterialDiastolicaIn;
+            localFRIn : SensorFrequenciaRespiratoriaIn;
+            localTemperaturaIn : SensorTemperaturaIn;
+            localSpO2In : SensorOximetriaIn;
+            localRegistroOut : MonitorSinaisVitaisCentralOut;
+        property idPaciente : IdentificadorPacienteVT;
+        property instanteMedicao : DataHoraVT;
+        property sinaisVitais : SinaisVitaisVT;
+    }
+    component def VisualizacaoCentralCP {
+        ports:
+            visualizacaoRegistroIn : RepositorioHistoricoIn;
+    }
+    component def SistemaCentralCP {
+        configuration {
+            components:
+                GerenciadorLeitosCP : GerenciadorLeitosCP {
+                    using ports:
+                        leitosEstadoIn : GerenciadorLeitosDisponibilidadeIn;
+                        leitosConsultaOut : GerenciadorLeitosConsultaPacienteOut;
+                        leitosPacienteIn : IntegracaoHospitalarPacienteIn;
+                }
+                IntegracaoHospitalarCP : IntegracaoHospitalarCP {
+                    using ports:
+                        hospitalConsultaIn : GerenciadorLeitosConsultaPacienteIn;
+                        hospitalPacienteOut : IntegracaoHospitalarPacienteOut;
+                        hospitalEstadoLeitoOut : GerenciadorLeitosDisponibilidadeOut;
+                }
+                InterfaceBordaCP : InterfaceBordaCP {
+                    using ports:
+                        bordaRegistroIn : VisualizacaoCentralIn;
+                }
+                RepositorioHistoricoCP : RepositorioHistoricoCP {
+                    using ports:
+                        historicoRegistroIn : MonitorSinaisVitaisCentralIn;
+                        historicoVisualizacaoOut : RepositorioHistoricoOut;
+                        historicoBordaOut : VisualizacaoCentralOut;
+                }
+                MonitorSinaisVitaisCP : MonitorSinaisVitaisCP {
+                    using ports:
+                        monitorRegistroOut : MonitorSinaisVitaisCentralOut;
+                }
+                VisualizacaoCentralCP : VisualizacaoCentralCP {
+                    using ports:
+                        visualizacaoRegistroIn : RepositorioHistoricoIn;
+                }
+            connectors:
+                armazenarMedicao : MonitorSinaisVitaisCentralCN bindings monitorRegistroOut = historicoRegistroIn;
+                visualizacaoCentral : RepositorioHistoricoCN bindings historicoVisualizacaoOut = visualizacaoRegistroIn;
+                visualizacaoBorda : VisualizacaoCentralCN bindings historicoBordaOut = bordaRegistroIn;
+                disponibilidadeLeito : GerenciadorLeitosDisponibilidadeCN bindings hospitalEstadoLeitoOut = leitosEstadoIn;
+                consultaPaciente : GerenciadorLeitosConsultaPacienteCN bindings leitosConsultaOut = hospitalConsultaIn;
+                retornoPaciente : IntegracaoHospitalarPacienteCN bindings hospitalPacienteOut = leitosPacienteIn;
+        }
+    }
+    component def RepositorioHistoricoCP {
+        ports:
+            historicoRegistroIn : MonitorSinaisVitaisCentralIn;
+            historicoVisualizacaoOut : RepositorioHistoricoOut;
+            historicoBordaOut : VisualizacaoCentralOut;
+    }
+    component def InterfaceBordaCP {
+        ports:
+            bordaRegistroIn : VisualizacaoCentralIn;
+    }
+    component def GerenciadorLeitosCP {
+        ports:
+            leitosEstadoIn : GerenciadorLeitosDisponibilidadeIn;
+            leitosConsultaOut : GerenciadorLeitosConsultaPacienteOut;
+            leitosPacienteIn : IntegracaoHospitalarPacienteIn;
+        property estadoLeito : DadosLeitoVT;
+        property paciente : DadosPacienteVT;
+        configuration {
+            components:
+                IndicadorDisponibilidadeLeitoCP : IndicadorDisponibilidadeLeitoCP {
+                    using ports:
+                        indicadorEstadoIn : GerenciadorLeitosDisponibilidadeIn;
+                }
+            delegations:
+                indicadorEstadoIn to leitosEstadoIn
+        }
+    }
+    component def IntegracaoHospitalarCP {
+        ports:
+            hospitalConsultaIn : GerenciadorLeitosConsultaPacienteIn;
+            hospitalPacienteOut : IntegracaoHospitalarPacienteOut;
+            hospitalEstadoLeitoOut : GerenciadorLeitosDisponibilidadeOut;
+    }
+    component def IndicadorDisponibilidadeLeitoCP {
+        ports:
+            indicadorEstadoIn : GerenciadorLeitosDisponibilidadeIn;
+    }
+} package SysADL_units {
+    unit bpm
+    unit mmHg
+    unit rpm
+    unit celsius
+    unit percentual
+}
